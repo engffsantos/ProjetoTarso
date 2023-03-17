@@ -1,0 +1,5 @@
+Flask
+msal
+msal-extensions
+flask_session
+requests
