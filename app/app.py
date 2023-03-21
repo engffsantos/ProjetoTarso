@@ -1,65 +1,27 @@
-from flask import Flask, redirect, request, session
-from msal import ConfidentialClientApplication
-import uuid
-import requests
+from flask import Flask, render_template
+from app.controllers import booking_controller, evento_controller, local_controller, pessoa_controller
 
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
 
 @app.route('/')
-def index():
-    if not session.get('user'):
-        return redirect('/login')
-    return 'Olá, {}!'.format(session['user']['displayName'])
+def home():
+    return render_template('base.html')
 
-@app.route('/login')
-def login():
-    # Cria um estado único para evitar ataques de CSRF
-    state = str(uuid.uuid4())
-    session['state'] = state
+@app.route('/reservas')
+def reservas():
+    return booking_controller.get_all_bookings()
 
-    # Cria uma instância do aplicativo de cliente confidencial do MSAL
-    cca = ConfidentialClientApplication(
-        app.config['CLIENT_ID'],
-        client_credential=app.config['CLIENT_SECRET']
-    )
+@app.route('/eventos')
+def eventos():
+    return evento_controller.get_all_events()
 
-    # Cria a URL de autorização
-    auth_url = cca.get_authorization_request_url(
-        scopes=['https://graph.microsoft.com/.default'],
-        state=state,
-        redirect_uri=app.config['REDIRECT_URI']
-    )
+@app.route('/locais')
+def locais():
+    return local_controller.get_all_locals()
 
-    return redirect(auth_url)
-
-@app.route('/callback')
-def callback():
-    # Verifica o estado para evitar ataques de CSRF
-    if request.args.get('state') != session.get('state'):
-        return redirect('/login')
-
-    # Cria uma instância do aplicativo de cliente confidencial do MSAL
-    cca = ConfidentialClientApplication(
-        app.config['CLIENT_ID'],
-        client_credential=app.config['CLIENT_SECRET']
-    )
-
-    # Obtém um token de acesso usando o código de autorização
-    result = cca.acquire_token_by_authorization_code(
-        request.args['code'],
-        scopes=['https://graph.microsoft.com/.default'],
-        redirect_uri=app.config['REDIRECT_URI']
-    )
-
-    # Obtém informações do usuário usando o token de acesso
-    response = requests.get(
-        'https://graph.microsoft.com/v1.0/me',
-        headers={'Authorization': 'Bearer ' + result['access_token']}
-    )
-    session['user'] = response.json()
-
-    return redirect('/')
+@app.route('/pessoas')
+def pessoas():
+    return pessoa_controller.get_all_people()
 
 if __name__ == '__main__':
     app.run()

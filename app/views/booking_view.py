@@ -1,0 +1,2 @@
+class BookingView:
+    pass
