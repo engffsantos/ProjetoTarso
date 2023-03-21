@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Booking List</h1>
+<a href="{{ url_for('booking_controller.nova_booking') }}">Add a new booking</a>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Event</th>
+      <th>Attendee</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for booking in bookings %}
+    <tr>
+      <td>{{ booking.id }}</td>
+      <td>{{ booking.event.name }}</td>
+      <td>{{ booking.attendee.name }}</td>
+      <td>{{ booking.date.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>
+        <a href="{{ url_for('booking_controller.editar_booking', id=booking.id) }}">Edit</a>
+        <a href="{{ url_for('booking_controller.excluir_booking', id=booking.id) }}">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Eventos</h1>
+  <a href="{{ url_for('evento_controller.novo_evento') }}">Novo evento</a>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Data</th>
+        <th>Local</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for evento in eventos %}
+        <tr>
+          <td>{{ evento.id }}</td>
+          <td>{{ evento.nome }}</td>
+          <td>{{ evento.data.strftime('%d/%m/%Y') }}</td>
+          <td>{{ evento.local.nome }}</td>
+          <td>
+            <a href="{{ url_for('evento_controller.editar_evento', id=evento.id) }}">Editar</a>
+            <a href="{{ url_for('evento_controller.excluir_evento', id=evento.id) }}">Excluir</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Locais</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Cidade</th>
+                <th>Estado</th>
+                <th>Capacidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for local in locais %}
+                <tr>
+                    <td>{{ local.nome }}</td>
+                    <td>{{ local.cidade }}</td>
+                    <td>{{ local.estado }}</td>
+                    <td>{{ local.capacidade }}</td>
+                    <td>
+                        <a href="{{ url_for('local_controller.editar_local', id=local.id) }}">Editar</a>
+                        <a href="{{ url_for('local_controller.excluir_local', id=local.id) }}">Excluir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('local_controller.novo_local') }}">Novo Local</a>
+{% endblock %}
