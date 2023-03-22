@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 from requests import auth
 
-from app.models.booking_model import Booking
-from app.views.booking_view import BookingView
+from app.models.booking_model import BookingModel
+from app.views.booking_view import booking_view
 from app.config import *
 #from app.utils import auth
 

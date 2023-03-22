@@ -3,4 +3,5 @@ msal
 msal-extensions
 flask_session
 requests
-
+SQLAlchemy
+Flask-SQLAlchemy
