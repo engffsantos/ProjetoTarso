@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from app.models.local_model import Local
-from app.views.local_view import LocalView
+from app.models.local_model import *
+from app.views.local_view import *
 from app.auth import auth
 
 local_bp = Blueprint('local_bp', __name__)

@@ -1,14 +1,72 @@
+from datetime import datetime
+
+import requests
 from flask import Blueprint, jsonify, request
 from requests import auth
 
-from app.models.booking_model import BookingModel
-from app.views.booking_view import booking_view
 from app.config import *
-#from app.utils import auth
+from app.views.booking_view import booking_view
 
-import requests
+# from app.utils import auth
 
 booking_bp = Blueprint('booking', __name__)
+
+class Booking:
+    def __init__(self, name, start_time, end_time, location):
+        self.name = name
+        self.start_time = start_time
+        self.end_time = end_time
+        self.location = location
+
+    def to_json(self):
+        return {
+            'subject': self.name,
+            'start': {
+                'dateTime': self.start_time.isoformat(),
+                'timeZone': 'UTC'
+            },
+            'end': {
+                'dateTime': self.end_time.isoformat(),
+                'timeZone': 'UTC'
+            },
+            'location': {
+                'displayName': self.location
+            }
+        }
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(
+            name=data.get('subject'),
+            start_time=datetime.fromisoformat(data.get('start').get('dateTime')),
+            end_time=datetime.fromisoformat(data.get('end').get('dateTime')),
+            location=data.get('location').get('displayName')
+        )
+
+    @classmethod
+    def from_microsoft_graph(cls, data):
+        return cls(
+            name=data.get('subject'),
+            start_time=datetime.fromisoformat(data.get('start').get('dateTime')),
+            end_time=datetime.fromisoformat(data.get('end').get('dateTime')),
+            location=data.get('location').get('displayName')
+        )
+
+    def to_microsoft_graph(self):
+        return {
+            'subject': self.name,
+            'start': {
+                'dateTime': self.start_time.isoformat(),
+                'timeZone': 'UTC'
+            },
+            'end': {
+                'dateTime': self.end_time.isoformat(),
+                'timeZone': 'UTC'
+            },
+            'location': {
+                'displayName': self.location
+            }
+        }
 
 @booking_bp.route('/bookings', methods=['GET'])
 @auth.login_required
@@ -28,11 +86,15 @@ def get_bookings():
 
         if response.status_code == 200:
             bookings = Booking.from_microsoft_graph(response.json())
-            return BookingView.render_many(bookings)
+            return booking_view.render_many(bookings)
         else:
             return jsonify({'error': 'Erro ao buscar reservas'}), response.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+
+
 @booking_bp.route('/bookings/<id>', methods=['GET'])
 @auth.login_required
 def get_booking_by_id(id):
@@ -44,7 +106,7 @@ def get_booking_by_id(id):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             booking = Booking.from_microsoft_graph(response.json())
-            return BookingView.render(booking)
+            return booking_view.render(booking)
         else:
             return jsonify({'error': 'Reserva não encontrada'}), response.status_code
     except Exception as e:
@@ -64,7 +126,7 @@ def create_booking():
         if response.status_code == 201:
             booking_id = response.json().get('id')
             new_booking.id = booking_id
-            return BookingView.render(new_booking), 201
+            return booking_view.render(new_booking), 201
         else:
             return jsonify({'error': 'Erro ao criar reserva'}), response.status_code
     except Exception as e:
@@ -84,7 +146,7 @@ def update_booking(id):
 
         if response.status_code == 200:
             updated_booking = Booking.from_microsoft_graph(response.json())
-            return BookingView.render(updated_booking)
+            return booking_view.render(updated_booking)
         else:
             return jsonify({'error': 'Erro ao atualizar reserva'}), response.status_code
     except Exception as e:

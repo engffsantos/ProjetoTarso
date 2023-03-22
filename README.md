@@ -40,5 +40,3 @@ Crie uma nova branch com as suas modificações: git checkout -b my-feature.
 Realize as suas modificações e faça o commit: git commit -m "Minha nova funcionalidade".
 Envie as suas modificações para a sua branch no repositório fork: git push origin my-feature.
 Abra um pull request para a branch principal do repositório.
-Licença
-O ProjetoTarso é distribuído sob a licença MIT. Consulte o arquivo LICENSE.md para mais informações.

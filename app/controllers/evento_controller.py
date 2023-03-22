@@ -1,7 +1,14 @@
-from app.controllers import evento_controller as controller
-from flask import jsonify, request
+from datetime import datetime
+
 from app.auth import auth
-@evento_bp.route('/events', methods=['GET'])
+from flask import jsonify, request
+
+from app import db
+from app.controllers import evento_controller as controller
+from app.views import evento_view
+
+
+@evento_controller.route('/eventos', methods=['GET'])
 @auth.login_required
 def get_events():
     """
@@ -9,11 +16,11 @@ def get_events():
     """
     try:
         events = controller.get_all_events()
-        return EventoView.render_many(events)
+        return evento_view.render_many(events)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@evento_bp.route('/events/<id>', methods=['GET'])
+@evento_controller.route('/events/<id>', methods=['GET'])
 @auth.login_required
 def get_event_by_id(id):
     """
@@ -21,11 +28,11 @@ def get_event_by_id(id):
     """
     try:
         event = controller.get_event_by_id(id)
-        return EventoView.render(event)
+        return evento_view.render(event)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@evento_bp.route('/events', methods=['POST'])
+@evento_controller.route('/eventos', methods=['POST'])
 @auth.login_required
 def create_event():
     """
@@ -34,10 +41,10 @@ def create_event():
     try:
         data = request.json
         event = controller.create_event(data)
-        return EventoView.render(event), 201
+        return evento_view.render(event), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-@evento_bp.route('/events/<id>', methods=['PUT'])
+@evento_controller.route('/eventos/<id>', methods=['PUT'])
 @auth.login_required
 def update_event(id):
     """
@@ -55,18 +62,18 @@ def update_event(id):
         event.location_id = data['location_id']
         db.session.commit()
 
-        return EventoView.render(event), 200
+        return evento_view.render(event), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@evento_bp.route('/events/<id>', methods=['DELETE'])
+@evento_controller.route('/eventos/<id>', methods=['DELETE'])
 @auth.login_required
 def delete_event(id):
     """
     Exclui um evento existente pelo ID
     """
     try:
-        event = Evento.query.filter_by(id=id).first()
+        event = evento_view.query.filter_by(id=id).first()
         if not event:
             return jsonify({'error': 'Evento não encontrado'}), 404
 
