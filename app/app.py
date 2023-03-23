@@ -1,3 +1,4 @@
+#vai curintia!
 from flask import Flask, render_template
 
 from app.controllers import booking_controller, evento_controller, local_controller, pessoa_controller
